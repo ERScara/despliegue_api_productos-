@@ -1,0 +1,34 @@
+version: '3'
+services:
+  # Servicio de la API
+  api:
+    build: .   # Ubicación del Dockerfile (actualmente en el mismo directorio)
+    ports:
+      - "3000:3000"   # Mapeo del puerto del contenedor al puerto del host
+    depends_on:
+      - mongodb   # Indicamos que depende del servicio 'mongodb'
+    healthcheck:
+      test: "curl -f http://localhost:3000/ || exit 1"
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+    environment:
+      MONGO_URL: mongodb://mongodb:27017/empresa
+      OAUTH_AUDIENCE: http://localhost:3000/api/productos
+      OAUTH_URL: https://dev-utn-frc-iaew.auth0.com/
+  # Servicio de MongoDB
+  mongodb:
+    image: mongo:latest   # Utilizamos la imagen oficial de MongoDB desde Docker Hub
+    ports:
+      - "27017:27017"   # Mapeo del puerto del contenedor al puerto del host
+    healthcheck:
+      test: "mongosh --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 1)'"
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    volumes:
+      - mongo_data:/data/db   # Mapeo de volumen para persistir los datos
+
+volumes:
+  mongo_data:   # Definimos el volumen para MongoDB

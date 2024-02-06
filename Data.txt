@@ -1,0 +1,12 @@
+(Get-ECRLoginCommand).Password | docker login --username AWS --password-stdin 224728055673.dkr.ecr.us-east-1.amazonaws.com
+
+docker build -t api-productos .
+
+docker tag api-productos:latest 224728055673.dkr.ecr.us-east-1.amazonaws.com/api-productos:latest
+
+docker push 224728055673.dkr.ecr.us-east-1.amazonaws.com/api-productos:latest
+
+aws cloudformation create-stack --template-body 'file://$PWD/infraestructure/vpc.yml' --stack-name api-productos-docker-ecs-vpc
+aws cloudformation create-stack --template-body 'file://$PWD/infraestructure/app-cluster.yml' --stack-name api-productos-docker-ecs-cluster
+aws cloudformation create-stack --template-body 'file://$PWD/infraestructure/api.yml' --stack-name api-productos-docker-ecs-api
+aws cloudformation delete-stack --stack-name api-productos-docker-ecs-api
