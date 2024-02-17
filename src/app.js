@@ -27,14 +27,13 @@ app.get("/health", (req, res) => {
 
 // Rutas de productos
 app.use("/api/productos",oauthCheck, productosRouter);
-
 app.use(errorHandler);
 
-//const PORT = process.env.PORT || 3000;
 
-
+// Iniciar el servidor
+const PORT = process.env.PORT || 3000;
 app.listen(3000, () => {
-  console.log(`API de productos escuchando en el puerto 3000`);
+ console.log("Servidor iniciado en el puerto 3000");
+});
 
 module.exports = app;
-});
